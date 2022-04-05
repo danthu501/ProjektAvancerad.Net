@@ -16,19 +16,29 @@ namespace Tidsrapporteringssystem.Services
         {
             _appDbContext = appDbContext;
         }
-        public Task<Project> Add(Project newEntity)
+        public async Task<Project> Add(Project newEntity)
         {
-            throw new NotImplementedException();
+            var result = await _appDbContext.Projects.AddAsync(newEntity);
+            await _appDbContext.SaveChangesAsync();
+            return result.Entity;
         }
 
-        public Task<Project> Delete(int id)
+        public async Task<Project> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await _appDbContext.Projects.FirstOrDefaultAsync(o => o.ProjectId == id);
+            if (result != null)
+            {
+                _appDbContext.Projects.Remove(result);
+                await _appDbContext.SaveChangesAsync();
+                return result;
+            }
+            return null;
         }
 
-        public Task<IEnumerable<Project>> GetAll()
+        public async Task<IEnumerable<Project>> GetAll()
         {
-            throw new NotImplementedException();
+
+            return await _appDbContext.Projects.ToListAsync();
         }
 
         public async Task<Project> GetSingle(int id)
@@ -36,9 +46,18 @@ namespace Tidsrapporteringssystem.Services
             return await _appDbContext.Projects.Include(e => e.Employees).FirstOrDefaultAsync(p => p.ProjectId == id);
         }
 
-        public Task<Project> Update(Project Entity)
+        public async Task<Project> Update(Project Entity)
         {
-            throw new NotImplementedException();
+            var result = await _appDbContext.Projects.FirstOrDefaultAsync(p => p.ProjectId == Entity.ProjectId);
+            if (result != null)
+            {
+                result.ProjectName = Entity.ProjectName;
+                result.Discription = Entity.Discription;
+
+                await _appDbContext.SaveChangesAsync();
+                return result;
+            }
+            return null;
         }
 
         public Task<Project> WorkedHours(int id, int week)

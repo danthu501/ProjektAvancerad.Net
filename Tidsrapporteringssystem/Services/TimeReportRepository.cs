@@ -16,19 +16,28 @@ namespace Tidsrapporteringssystem.Services
         {
             _appContext = appContext;
         }
-        public Task<TimeReport> Add(TimeReport newEntity)
+        public async Task<TimeReport> Add(TimeReport newEntity)
         {
-            throw new NotImplementedException();
+            var result = await _appContext.TimReports.AddAsync(newEntity);
+            await _appContext.SaveChangesAsync();
+            return result.Entity;
         }
 
-        public Task<TimeReport> Delete(int id)
+        public async Task<TimeReport> Delete(int id)
         {
-            throw new NotImplementedException();
+            var result = await _appContext.TimReports.FirstOrDefaultAsync(t => t.TimeReportId == id);
+            if (result != null)
+            {
+                _appContext.TimReports.Remove(result);
+                await _appContext.SaveChangesAsync();
+                return result;
+            }
+            return null;
         }
 
-        public Task<IEnumerable<TimeReport>> GetAll()
+        public async Task<IEnumerable<TimeReport>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _appContext.TimReports.ToListAsync();
         }
 
         public async Task<TimeReport> GetSingle(int id)
@@ -36,24 +45,34 @@ namespace Tidsrapporteringssystem.Services
             return await _appContext.TimReports.FirstOrDefaultAsync(t => t.TimeReportId == id);
         }
 
-        public Task<TimeReport> Update(TimeReport Entity)
+        public async Task<TimeReport> Update(TimeReport Entity)
         {
-            throw new NotImplementedException();
+            var result = await _appContext.TimReports.FirstOrDefaultAsync(t => t.TimeReportId == Entity.TimeReportId);
+            if (result != null)
+            {
+                result.EmployeeId = Entity.EmployeeId;
+                result.FillingDate = Entity.FillingDate;
+                result.Week = Entity.Week;
+                result.WorkedHours = Entity.WorkedHours;
+
+                await _appContext.SaveChangesAsync();
+                return result;
+            }
+            return null;
+
         }
 
         public async Task<TimeReport> WorkedHours(int id, int week)
         {
-
-          
-            var result = _appContext.TimReports.Where(i => i.EmployeeId == id);
+            //var result1 = (from TimeReport in _appContext.TimReports
+            //               where TimeReport.TimeReportId == id && TimeReport.Week == week
+            //               select TimeReport);
+            var result = _appContext.TimReports.Where(i => i.EmployeeId == id).Where(w => w.Week == week);
             if (result != null)
             {
-                return await result.FirstOrDefaultAsync(w => w.Week == week);
+                return await result.FirstOrDefaultAsync();
             }
             return null;
-            
-
-
 
         }
     }
