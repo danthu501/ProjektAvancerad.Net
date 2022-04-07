@@ -43,16 +43,6 @@ namespace Tidsrapporteringssystem.Services
 
         public async Task<Employee> GetSingle(int id)
         {
-
-            //var result = await (from Employee in _appDbContext.Employees
-            //                    join TimeReport in _appDbContext.TimReports on Employee.EmployeeId equals TimeReport.EmployeeId
-            //                    select new { Employee, TimeReport }).FirstOrDefaultAsync(e => e.Employee.EmployeeId == id);
-            //if (result != null)
-            //{
-            //    return result.Employee;
-            //}
-            //return null;
-
             return await _appDbContext.Employees.Include(t => t.TimeReports).FirstOrDefaultAsync(e => e.EmployeeId == id);
 
         }

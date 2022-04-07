@@ -64,9 +64,6 @@ namespace Tidsrapporteringssystem.Services
 
         public async Task<TimeReport> WorkedHours(int id, int week)
         {
-            //var result1 = (from TimeReport in _appContext.TimReports
-            //               where TimeReport.TimeReportId == id && TimeReport.Week == week
-            //               select TimeReport);
             var result = _appContext.TimReports.Where(i => i.EmployeeId == id).Where(w => w.Week == week);
             if (result != null)
             {
